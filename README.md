@@ -1,5 +1,11 @@
 # Squaredex
 
+## Purpose
+
+Solve a Squaredle puzzle at the command line or via a LiveView interface.
+
+
+
 To start your Phoenix server:
 
   * Run `mix setup` to install and setup dependencies
