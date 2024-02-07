@@ -49,7 +49,10 @@ defmodule SquaredexWeb.SolveLive do
       "letters bg-gray-300 rounded-2xl shadow-lg grid grid-rows-#{side} grid-cols-#{side} aspect-square gap-4 p-4"
 
   def handle_event("refresh", %{"all_letters" => all_letters}, socket) do
+    # should already be done by front-end. Belt and braces
     all_letters = String.replace(all_letters, ~r"[^A-Z_]", "")
+
+    # pad the string to a square number of letters (eg 9, 16, 25 etc.)
     letters = String.split(all_letters, "", trim: true)
     length = length(letters)
     side = minimal_side(length)
@@ -69,11 +72,17 @@ defmodule SquaredexWeb.SolveLive do
     <h1>Squaredex</h1>
 
     <div class="letters_form">
-      <.form phx-submit="submit" phx-change="refresh">
+      <form phx-submit="submit" phx-change="refresh">
         <.label>Enter the puzzle letters, use "_" for a gap</.label>
-        <.input type="text" name="all_letters" value={@all_letters} />
+        <.input
+          type="text"
+          id="custom-letter-input"
+          name="all_letters"
+          value={@all_letters}
+          phx-hook="LettersAndUnderscores"
+        />
         <.button>Submit</.button>
-      </.form>
+      </form>
     </div>
 
     <div class={@class}>
