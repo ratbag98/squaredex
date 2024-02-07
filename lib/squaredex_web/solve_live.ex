@@ -35,8 +35,7 @@ defmodule SquaredexWeb.SolveLive do
      assign(socket,
        letters: [],
        all_letters: "",
-       class: grid_class(0),
-       length: 0
+       class: grid_class(0)
      )}
   end
 
@@ -50,24 +49,31 @@ defmodule SquaredexWeb.SolveLive do
       "letters bg-gray-300 rounded-2xl shadow-lg grid grid-rows-#{side} grid-cols-#{side} aspect-square gap-4 p-4"
 
   def handle_event("refresh", %{"all_letters" => all_letters}, socket) do
+    all_letters = String.replace(all_letters, ~r"[^A-Z_]", "")
     letters = String.split(all_letters, "", trim: true)
     length = length(letters)
     side = minimal_side(length)
     padding = List.duplicate("_", side * side - length)
     letters = letters ++ padding
 
-    {:noreply, assign(socket, letters: letters, length: length, class: grid_class(side))}
+    {:noreply,
+     assign(socket,
+       all_letters: all_letters,
+       letters: letters,
+       class: grid_class(side)
+     )}
   end
 
   def render(assigns) do
     ~H"""
-    <h1>Squaredex for <%= @length %> letters .</h1>
+    <h1>Squaredex</h1>
 
     <div class="letters_form">
-      <form phx-submit="submit" phx-change="refresh">
-        <input type="text" name="all_letters" value={@all_letters} />
-        <button>Submit</button>
-      </form>
+      <.form phx-submit="submit" phx-change="refresh">
+        <.label>Enter the puzzle letters, use "_" for a gap</.label>
+        <.input type="text" name="all_letters" value={@all_letters} />
+        <.button>Submit</.button>
+      </.form>
     </div>
 
     <div class={@class}>
