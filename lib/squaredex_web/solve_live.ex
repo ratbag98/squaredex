@@ -1,32 +1,92 @@
 defmodule SquaredexWeb.SolveLive do
   use SquaredexWeb, :live_view
+  alias SquaredexWeb.Component
 
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, letters: "")}
+    # letters = [
+    #   "A",
+    #   "Q",
+    #   "E",
+    #   "R",
+    #   "D",
+    #   "E",
+    #   "H",
+    #   "A",
+    #   "W",
+    #   "U",
+    #   "M",
+    #   "E",
+    #   "N",
+    #   "A",
+    #   "_",
+    #   "E"
+    # ]
+    #
+    # side = trunc(:math.sqrt(length(letters)))
+    # diff = length(letters) - side * side
+    #
+    # if diff == 0 do
+    #   real_side = side
+    # else
+    #   real_side = side + 1
+    # end
+
+    {:ok,
+     assign(socket,
+       letters: [],
+       all_letters: "",
+       class: grid_class(0),
+       length: 0
+     )}
   end
 
-  @spec render(any) :: Phoenix.LiveView.Rendered.t()
+  def minimal_side(len) do
+    side = trunc(:math.sqrt(len))
+    if side * side < len, do: side + 1, else: side
+  end
+
+  def grid_class(side),
+    do:
+      "letters bg-gray-300 rounded-2xl shadow-lg grid grid-rows-#{side} grid-cols-#{side} aspect-square gap-4 p-4"
+
+  def handle_event("refresh", %{"all_letters" => all_letters}, socket) do
+    letters = String.split(all_letters, "", trim: true)
+    length = length(letters)
+    side = minimal_side(length)
+    padding = List.duplicate("_", side * side - length)
+    letters = letters ++ padding
+
+    {:noreply, assign(socket, letters: letters, length: length, class: grid_class(side))}
+  end
+
   def render(assigns) do
     ~H"""
-    <h1>Squaredex</h1>
-    <div class="letters bg-gray-300 rounded-2xl shadow-lg grid grid-flow-row gap-4 grid-rows-4 grid-cols-4 aspect-square p-4">
-      <.live_component module={SquaredexWeb.Letter} letter="A" id="1" />
-      <.live_component module={SquaredexWeb.Letter} letter="Q" id="2" />
-      <.live_component module={SquaredexWeb.Letter} letter="E" id="3" />
-      <.live_component module={SquaredexWeb.Letter} letter="R" id="4" />
-      <.live_component module={SquaredexWeb.Letter} letter="D" id="5" />
-      <.live_component module={SquaredexWeb.Letter} letter="E" id="6" />
-      <.live_component module={SquaredexWeb.Letter} letter="H" id="7" />
-      <.live_component module={SquaredexWeb.Letter} letter="A" id="8" />
-      <.live_component module={SquaredexWeb.Letter} letter="V" id="9" />
-      <.live_component module={SquaredexWeb.Letter} letter="T" id="10" />
-      <.live_component module={SquaredexWeb.Letter} letter="M" id="11" />
-      <.live_component module={SquaredexWeb.Letter} letter="E" id="12" />
-      <.live_component module={SquaredexWeb.Letter} letter="N" id="13" />
-      <.live_component module={SquaredexWeb.Letter} letter="A" id="14" />
-      <.live_component module={SquaredexWeb.Letter} letter=" " id="15" />
-      <.live_component module={SquaredexWeb.Letter} letter="E" id="16" />
+    <h1>Squaredex for <%= @length %> letters .</h1>
+
+    <div class="letters_form">
+      <form phx-submit="submit" phx-change="refresh">
+        <input type="text" name="all_letters" value={@all_letters} />
+        <button>Submit</button>
+      </form>
     </div>
+
+    <div class={@class}>
+      <%= for letter <- @letters do %>
+        <Component.letter letter={letter} id={letter} />
+      <% end %>
+    </div>
+
+    <%!-- these are necessary to get Tailwind to include the classes --%>
+    <div class="grid-rows-1 grid-cols-1" />
+    <div class="grid-rows-2 grid-cols-2" />
+    <div class="grid-rows-3 grid-cols-3" />
+    <div class="grid-rows-4 grid-cols-4" />
+    <div class="grid-rows-5 grid-cols-5" />
+    <div class="grid-rows-6 grid-cols-6" />
+    <div class="grid-rows-7 grid-cols-7" />
+    <div class="grid-rows-8 grid-cols-8" />
+    <div class="grid-rows-9 grid-cols-9" />
+    <div class="grid-rows-10 grid-cols-10" />
     """
   end
 end
