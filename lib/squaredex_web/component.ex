@@ -11,7 +11,10 @@ defmodule SquaredexWeb.Component do
 
   def letter(assigns) do
     ~H"""
-    <div class="letter text-black text-5xl font-semibold rounded-xl p-4 flex justify-center items-center box-border border-4 border-gray-800">
+    <div
+      id={@id}
+      class="letter text-black text-5xl font-semibold rounded-xl p-4 flex justify-center items-center box-border border-4 border-gray-800"
+    >
       <%= @letter %>
     </div>
     """

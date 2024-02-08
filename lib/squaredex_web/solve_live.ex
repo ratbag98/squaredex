@@ -1,69 +1,13 @@
 defmodule SquaredexWeb.SolveLive do
   use SquaredexWeb, :live_view
-  alias SquaredexWeb.Component
+  import SquaredexWeb.Component
 
   def mount(_params, _session, socket) do
-    # letters = [
-    #   "A",
-    #   "Q",
-    #   "E",
-    #   "R",
-    #   "D",
-    #   "E",
-    #   "H",
-    #   "A",
-    #   "W",
-    #   "U",
-    #   "M",
-    #   "E",
-    #   "N",
-    #   "A",
-    #   "_",
-    #   "E"
-    # ]
-    #
-    # side = trunc(:math.sqrt(length(letters)))
-    # diff = length(letters) - side * side
-    #
-    # if diff == 0 do
-    #   real_side = side
-    # else
-    #   real_side = side + 1
-    # end
-
     {:ok,
      assign(socket,
        letters: [],
        all_letters: "",
        class: grid_class(0)
-     )}
-  end
-
-  def minimal_side(len) do
-    side = trunc(:math.sqrt(len))
-    if side * side < len, do: side + 1, else: side
-  end
-
-  def grid_class(side),
-    do:
-      "letters bg-gray-300 rounded-2xl shadow-lg grid grid-rows-#{side} grid-cols-#{side} aspect-square gap-4 p-4"
-
-  def handle_event("refresh", %{"all_letters" => all_letters}, socket) do
-    # should already be done by front-end. Belt and braces
-    all_letters = String.replace(all_letters, ~r"[^A-Z_]", "")
-
-    # pad the string to a square number of letters (eg 9, 16, 25 etc.)
-    letters = String.split(all_letters, "", trim: true)
-    length = length(letters)
-    side = minimal_side(length)
-    padding = List.duplicate("_", side * side - length)
-    letters = letters ++ padding
-
-    {:noreply,
-     assign(socket,
-       all_letters: all_letters,
-       letters: letters,
-       class: grid_class(side)
      )}
   end
 
@@ -80,15 +24,19 @@ defmodule SquaredexWeb.SolveLive do
           name="all_letters"
           value={@all_letters}
           phx-hook="LettersAndUnderscores"
+          autocorrect="off"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
         />
         <.button>Submit</.button>
       </form>
     </div>
 
     <div class={@class}>
-      <%= for letter <- @letters do %>
-        <Component.letter letter={letter} id={letter} />
-      <% end %>
+      <%= Enum.with_index(@letters, fn letter, index -> %>
+        <.letter letter={letter} id={"letter_#{index}"} />
+      <% end) %>
     </div>
 
     <%!-- these are necessary to get Tailwind to include the classes --%>
@@ -104,4 +52,35 @@ defmodule SquaredexWeb.SolveLive do
     <div class="grid-rows-10 grid-cols-10" />
     """
   end
+
+  def handle_event("refresh", %{"all_letters" => all_letters}, socket) do
+    # should already be done by front-end. Belt and braces
+    all_letters = String.replace(all_letters, ~r"[^A-Z_]", "")
+
+    # pad the string to a square number of letters (eg 9, 16, 25 etc.)
+    letters = String.split(all_letters, "", trim: true)
+    length = length(letters)
+    side = minimal_side(length)
+
+    padding = List.duplicate("_", side * side - length)
+    letters = letters ++ padding
+
+    {:noreply,
+     assign(socket,
+       all_letters: all_letters,
+       letters: letters,
+       class: grid_class(side)
+     )}
+  end
+
+  # the smallest square side length that fits the current letters
+  defp minimal_side(len) do
+    side = trunc(:math.sqrt(len))
+    if side * side < len, do: side + 1, else: side
+  end
+
+  # adjust the Tailwind class
+  defp grid_class(side),
+    do:
+      "letters bg-gray-300 rounded-2xl shadow-lg grid grid-rows-#{side} grid-cols-#{side} aspect-square gap-4 p-4"
 end
