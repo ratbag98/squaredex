@@ -1,4 +1,7 @@
 defmodule SquaredexWeb.Component do
+  @moduledoc """
+  Useful components for HTML wrangling or other nefarious purposes
+  """
   use Phoenix.Component
 
   def letter(%{letter: "_"} = assigns) do
@@ -9,11 +12,24 @@ defmodule SquaredexWeb.Component do
     """
   end
 
+  # dull letter
+  def letter(%{path_position: nil} = assigns) do
+    ~H"""
+    <div
+      id={@id}
+      class="text-black text-5xl font-bold rounded-xl p-4 flex justify-center items-center box-border border-4 border-gray-800"
+    >
+      <%= @letter %>
+    </div>
+    """
+  end
+
   def letter(assigns) do
     ~H"""
     <div
       id={@id}
-      class="letter text-black text-5xl font-semibold rounded-xl p-4 flex justify-center items-center box-border border-4 border-gray-800"
+      class="bg-gray-200 text-red-500 text-5xl font-semibold rounded-xl p-4 flex justify-center items-center box-border border-4 border-gray-500"
+      path-index={@path_position}
     >
       <%= @letter %>
     </div>

@@ -7,7 +7,8 @@ defmodule SquaredexWeb.SolveLive do
      assign(socket,
        letters: [],
        all_letters: "",
-       class: grid_class(0)
+       class: grid_class(0),
+       solution_path: [0, 1, 2, 4]
      )}
   end
 
@@ -24,7 +25,6 @@ defmodule SquaredexWeb.SolveLive do
           name="all_letters"
           value={@all_letters}
           phx-hook="LettersAndUnderscores"
-          autocorrect="off"
           autocomplete="off"
           autocapitalize="off"
           spellcheck="false"
@@ -33,9 +33,13 @@ defmodule SquaredexWeb.SolveLive do
       </form>
     </div>
 
-    <div class={@class}>
+    <div class={@class} id="letters_grid">
       <%= Enum.with_index(@letters, fn letter, index -> %>
-        <.letter letter={letter} id={"letter_#{index}"} />
+        <.letter
+          letter={letter}
+          id={"letter_#{index}"}
+          path_position={Enum.find_index(assigns.solution_path, fn i -> index == i end)}
+        />
       <% end) %>
     </div>
 
@@ -73,6 +77,11 @@ defmodule SquaredexWeb.SolveLive do
      )}
   end
 
+  def handle_event("submit", _, socket) do
+    # fake solve, just want to check path drawing logic
+    {:noreply, assign(socket, solution_path: [0, 1, 2, 4])}
+  end
+
   # the smallest square side length that fits the current letters
   defp minimal_side(len) do
     side = trunc(:math.sqrt(len))
@@ -82,5 +91,5 @@ defmodule SquaredexWeb.SolveLive do
   # adjust the Tailwind class
   defp grid_class(side),
     do:
-      "letters bg-gray-300 rounded-2xl shadow-lg grid grid-rows-#{side} grid-cols-#{side} aspect-square gap-4 p-4"
+      "bg-gray-300 rounded-2xl shadow-lg grid grid-rows-#{side} grid-cols-#{side} aspect-square gap-4 p-4"
 end
