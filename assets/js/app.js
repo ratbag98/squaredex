@@ -35,6 +35,22 @@ Hooks.LettersAndUnderscores = {
   }
 }
 
+Hooks.DrawGridPath = {
+  updated() {
+    var path_members = this.el.querySelectorAll("[path-index]")
+    const centres = Array(path_members.length)
+    for (var i = 0; i < path_members.length; i++) {
+      let item = path_members[i]
+      let path_index = item.getAttribute("path-index")
+      let rect = item.getBoundingClientRect()
+      let cx = rect.x + (rect.width / 2.0)
+      let cy = rect.y + (rect.height / 2.0)
+      centres[path_index] = { x: cx, y: cy }
+    }
+    console.info(`Final array ${JSON.stringify(centres, undefined, 2)}`)
+  }
+}
+
 let liveSocket = new LiveSocket("/live", Socket, { hooks: Hooks, params: { _csrf_token: csrfToken } })
 
 // Show progress bar on live navigation and form submits

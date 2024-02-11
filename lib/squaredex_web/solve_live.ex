@@ -33,7 +33,7 @@ defmodule SquaredexWeb.SolveLive do
       </form>
     </div>
 
-    <div class={@class} id="letters_grid">
+    <div class={@class} id="letters_grid" phx-hook="DrawGridPath">
       <%= Enum.with_index(@letters, fn letter, index -> %>
         <.letter
           letter={letter}
