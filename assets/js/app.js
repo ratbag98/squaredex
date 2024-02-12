@@ -28,25 +28,55 @@ let Hooks = {}
 // Only allow A-Z and underscores for custom grids
 Hooks.LettersAndUnderscores = {
   mounted() {
+    var regex = new RegExp("[^A-Z_]", 'g')
     this.el.addEventListener("input", _e => {
-      var regex = new RegExp("[^A-Z_]", 'g')
       this.el.value = this.el.value.replace(regex, "")
     })
   }
 }
 
+// get the centres of letters in the solution path, in order
 Hooks.DrawGridPath = {
   updated() {
+    var divRect = this.el.getBoundingClientRect()
+
+    var path = document.createElementNS("http://www.w3.org/2000/svg", "path")
+
+    path.setAttribute('id', 'solPath')
     var path_members = this.el.querySelectorAll("[path-index]")
     const centres = Array(path_members.length)
+    var pathString = ""
     for (var i = 0; i < path_members.length; i++) {
       let item = path_members[i]
       let path_index = item.getAttribute("path-index")
       let rect = item.getBoundingClientRect()
-      let cx = rect.x + (rect.width / 2.0)
-      let cy = rect.y + (rect.height / 2.0)
-      centres[path_index] = { x: cx, y: cy }
+      let x = rect.x + (rect.width / 2.0)
+      let y = rect.y + (rect.height / 2.0)
+
+      centres[path_index] = {
+        x: x,
+        y: y
+      }
+      if (i == 0) {
+        pathString = `M ${x} ${y}`
+      } else {
+        pathString += ` L ${x} ${y}`
+      }
     }
+
+    path.setAttribute('d', `${pathString} z`)
+    path.setAttribute('stroke', 'red')
+    path.setAttribute('stroke-linecap', 'round')
+    path.setAttribute('stroke-linejoin', 'round')
+    path.setAttribute('stroke-width', '20')
+    path.setAttribute('fill-opacity', '0')
+
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
+    svg.setAttribute("width", divRect.width)
+    svg.setAttribute("height", divRect.height)
+    svg.setAttribute("class", "")
+    svg.appendChild(path)
+    this.el.appendChild(svg)
     console.info(`Final array ${JSON.stringify(centres, undefined, 2)}`)
   }
 }
