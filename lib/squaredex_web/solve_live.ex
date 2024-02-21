@@ -5,16 +5,17 @@ defmodule SquaredexWeb.SolveLive do
   def mount(_params, _session, socket) do
     {:ok,
      assign(socket,
-       letters: [],
-       all_letters: "",
+       puzzle_letters: "",
+       padding: 0,
        class: grid_class(0),
-       solution_path: []
+       solution_path: [],
+       manual_path: ""
      )}
   end
 
   def render(assigns) do
     ~H"""
-    <h1>Squaredex</h1>
+    <h1 class="font-bold text-2xl">Squaredex</h1>
 
     <div class="letters_form">
       <form phx-submit="submit" phx-change="refresh">
@@ -22,13 +23,15 @@ defmodule SquaredexWeb.SolveLive do
         <.input
           type="text"
           id="custom-letter-input"
-          name="all_letters"
-          value={@all_letters}
+          name="puzzle_letters"
+          value={@puzzle_letters}
           phx-hook="LettersAndUnderscores"
           autocomplete="off"
           autocapitalize="off"
           spellcheck="false"
         />
+        <.label>Provide a list of ids to connect</.label>
+        <.input type="text" id="manual-path" name="manual-path" value={@manual_path} />
         <.button>Submit</.button>
         <.non_submit phx-click="clear">
           Clear Path
@@ -43,7 +46,7 @@ defmodule SquaredexWeb.SolveLive do
         )
       />
       <div class={@class} id="letters_grid" phx-hook="DrawGridPath">
-        <%= Enum.with_index(@letters, fn letter, index -> %>
+        <%= Enum.with_index(String.graphemes(@puzzle_letters) ++ List.duplicate("_", @padding), fn letter, index -> %>
           <.letter
             id={"letter_#{index}"}
             letter={letter}
@@ -67,34 +70,42 @@ defmodule SquaredexWeb.SolveLive do
     """
   end
 
-  def handle_event("refresh", %{"all_letters" => all_letters}, socket) do
+  def handle_event("refresh", %{"puzzle_letters" => puzzle_letters}, socket) do
     # should already be done by front-end. Belt and braces
-    all_letters = String.replace(all_letters, ~r"[^A-Z_]", "")
+    puzzle_letters = String.replace(puzzle_letters, ~r"[^A-Z_]", "")
 
     # pad the string to a square number of letters (eg 9, 16, 25 etc.)
-    letters = String.split(all_letters, "", trim: true)
+    letters = String.graphemes(puzzle_letters)
     length = length(letters)
     side = minimal_side(length)
 
-    padding = List.duplicate("_", side * side - length)
-    letters = letters ++ padding
-
     {:noreply,
      assign(socket,
-       all_letters: all_letters,
-       letters: letters,
+       puzzle_letters: puzzle_letters,
+       paddiing: side * side - length,
        class: grid_class(side)
      )}
   end
 
-  def handle_event("submit", _, socket) do
+  def handle_event("submit", %{"manual-path" => manual_path}, socket) do
+    manual_path = String.replace(manual_path, ~r"[^0-9, ]", "")
+
     # fake solve, just want to check path drawing logic
-    {:noreply, assign(socket, solution_path: [2, 1, 0, 4, 8, 7, 6])}
+    {:noreply,
+     assign(socket, manual_path: manual_path, solution_path: parse_manual_path(manual_path))}
   end
 
   def handle_event("clear", _, socket) do
     # fake solve, just want to check path drawing logic
     {:noreply, assign(socket, solution_path: [])}
+  end
+
+  defp parse_manual_path(""), do: []
+
+  defp parse_manual_path(path) do
+    path
+    |> String.split(~r"[ ,]")
+    |> Enum.map(&String.to_integer/1)
   end
 
   # the smallest square side length that fits the current letters
