@@ -17,8 +17,8 @@ defmodule SquaredexWeb.SolveLive do
     <h1>Squaredex</h1>
 
     <div class="letters_form">
-      <form phx-submit="submit" phx-change="refresh" phx-window-keyup="clear">
-        <.label>Enter the puzzle letters, use "_" for a gap. Press esc to clear path</.label>
+      <form phx-submit="submit" phx-change="refresh">
+        <.label>Enter the puzzle letters, use "_" for a gap.</.label>
         <.input
           type="text"
           id="custom-letter-input"

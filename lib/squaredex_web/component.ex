@@ -4,28 +4,42 @@ defmodule SquaredexWeb.Component do
   """
   use Phoenix.Component
 
-  attr :letter, :string, default: "_"
+  defp cell_class, do: "rounded-xl p-4"
+
+  defp generic_letter_class,
+    do: "#{cell_class()} flex justify-center items-center box-border border-4"
+
+  defp dull_letter_class,
+    do: "#{generic_letter_class()} text-black text-5xl font-bold border-gray-800"
+
+  defp active_letter_class,
+    do:
+      "#{generic_letter_class()} bg-gray-200 text-red-500 text-5xl font-semibold border-gray-500"
+
   attr :id, :string, required: true, doc: "the id of this letter in the grid"
+  attr :letter, :string, required: true
+  attr :class, :string, default: nil
+  attr :path_position, :integer, doc: "where this letter appears in solution path, if anywhere"
 
-  attr :path_position, :list,
-    default: [],
-    doc: "where this letter appears in solution path, if anywhere"
+  @doc """
+   Renders a letter in the grid. If the letter is "_" it renders a blank
 
+  ## Examples
+
+    <.letter id="letter_1" letter="_" />
+    <.letter id="letter_2" letter="Q" />
+    <.letter id="letter_3" letter="Z" path_position=4 />
+  """
   def letter(%{letter: "_"} = assigns) do
     ~H"""
-    <div class="blank rounded-xl box-border p-4 border-0 ">
-      &nbsp;
-    </div>
+    <div class={[cell_class(), @class]}>&nbsp;</div>
     """
   end
 
   # dull letter
   def letter(%{path_position: nil} = assigns) do
     ~H"""
-    <div
-      id={@id}
-      class="text-black text-5xl font-bold rounded-xl p-4 flex justify-center items-center box-border border-4 border-gray-800"
-    >
+    <div id={@id} class={[dull_letter_class(), @class]}>
       <%= @letter %>
     </div>
     """
@@ -33,11 +47,7 @@ defmodule SquaredexWeb.Component do
 
   def letter(assigns) do
     ~H"""
-    <div
-      id={@id}
-      class="bg-gray-200 text-red-500 text-5xl font-semibold rounded-xl p-4 flex justify-center items-center box-border border-4 border-gray-500"
-      path-index={@path_position}
-    >
+    <div id={@id} class={[active_letter_class(), @class]} path-index={@path_position}>
       <%= @letter %>
     </div>
     """
