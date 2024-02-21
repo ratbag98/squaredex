@@ -8,7 +8,7 @@ defmodule SquaredexWeb.SolveLive do
        letters: [],
        all_letters: "",
        class: grid_class(0),
-       solution_path: [0, 1, 2, 4]
+       solution_path: []
      )}
   end
 
@@ -17,8 +17,8 @@ defmodule SquaredexWeb.SolveLive do
     <h1>Squaredex</h1>
 
     <div class="letters_form">
-      <form phx-submit="submit" phx-change="refresh">
-        <.label>Enter the puzzle letters, use "_" for a gap</.label>
+      <form phx-submit="submit" phx-change="refresh" phx-window-keyup="clear">
+        <.label>Enter the puzzle letters, use "_" for a gap. Press esc to clear path</.label>
         <.input
           type="text"
           id="custom-letter-input"
@@ -30,6 +30,9 @@ defmodule SquaredexWeb.SolveLive do
           spellcheck="false"
         />
         <.button>Submit</.button>
+        <.non_submit phx-click="clear">
+          Clear Path
+        </.non_submit>
       </form>
     </div>
 
@@ -42,9 +45,9 @@ defmodule SquaredexWeb.SolveLive do
       <div class={@class} id="letters_grid" phx-hook="DrawGridPath">
         <%= Enum.with_index(@letters, fn letter, index -> %>
           <.letter
-            letter={letter}
             id={"letter_#{index}"}
-            path_position={Enum.find_index(assigns.solution_path, fn i -> index == i end)}
+            letter={letter}
+            path_position={Enum.find_index(@solution_path, fn i -> index == i end)}
           />
         <% end) %>
       </div>
@@ -87,6 +90,11 @@ defmodule SquaredexWeb.SolveLive do
   def handle_event("submit", _, socket) do
     # fake solve, just want to check path drawing logic
     {:noreply, assign(socket, solution_path: [2, 1, 0, 4, 8, 7, 6])}
+  end
+
+  def handle_event("clear", _, socket) do
+    # fake solve, just want to check path drawing logic
+    {:noreply, assign(socket, solution_path: [])}
   end
 
   # the smallest square side length that fits the current letters

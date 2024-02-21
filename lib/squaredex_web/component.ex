@@ -4,6 +4,13 @@ defmodule SquaredexWeb.Component do
   """
   use Phoenix.Component
 
+  attr :letter, :string, default: "_"
+  attr :id, :string, required: true, doc: "the id of this letter in the grid"
+
+  attr :path_position, :list,
+    default: [],
+    doc: "where this letter appears in solution path, if anywhere"
+
   def letter(%{letter: "_"} = assigns) do
     ~H"""
     <div class="blank rounded-xl box-border p-4 border-0 ">
@@ -33,6 +40,34 @@ defmodule SquaredexWeb.Component do
     >
       <%= @letter %>
     </div>
+    """
+  end
+
+  @doc """
+  Renders a non-submit button.
+
+  ## Examples
+
+      <.non_submit>Clear</.non_submit>
+      <.non_submit phx-click="reset" class="ml-2">reset</.non_submit>
+  """
+  attr :class, :string, default: nil
+  attr :rest, :global, include: ~w(disabled form name value)
+
+  slot :inner_block, required: true
+
+  def non_submit(assigns) do
+    ~H"""
+    <.link
+      class={[
+        "rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
+        "text-sm font-semibold leading-6 text-white active:text-white/80",
+        @class
+      ]}
+      {@rest}
+    >
+      <%= render_slot(@inner_block) %>
+    </.link>
     """
   end
 end
