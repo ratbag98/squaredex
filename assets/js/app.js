@@ -44,11 +44,16 @@ Hooks.DrawGridPath = {
     canvas.width = divRect.width
     canvas.height = divRect.height
 
+    let style = "rgb(0,0, 100)"
+    const lineWidth = 8
+    const startCircle = 16
+
     // let's draw a line
     const ctx = canvas.getContext("2d")
     ctx.beginPath()
-    ctx.strokeStyle = "black"
-    ctx.lineWidth = 1
+    ctx.strokeStyle = style
+    ctx.lineCap = "round"
+    ctx.lineJoin = "round"
 
 
     // get all the letters that are on the solution path and sort by their path index
@@ -64,6 +69,11 @@ Hooks.DrawGridPath = {
       let y = rect.y - divRect.y + (rect.height / 2.0)
 
       if (i == 0) {
+        ctx.arc(x, y, startCircle, 0, 2 * Math.PI)
+        ctx.fillStyle = style
+        ctx.fill()
+        ctx.beginPath()
+        ctx.lineWidth = lineWidth
         ctx.moveTo(x, y)
       } else {
         ctx.lineTo(x, y)

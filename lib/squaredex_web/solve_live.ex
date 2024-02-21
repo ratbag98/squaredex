@@ -36,7 +36,7 @@ defmodule SquaredexWeb.SolveLive do
     <div class="relative">
       <canvas
         id="grid-overlay"
-        class="h-full w-full pointer-events-none absolute top-0 left-0 z-10 p-4 aspect-square"
+        class="h-full w-full pointer-events-none absolute top-0 left-0 z-10 aspect-square opacity-25"
         )
       />
       <div class={@class} id="letters_grid" phx-hook="DrawGridPath">
@@ -86,7 +86,7 @@ defmodule SquaredexWeb.SolveLive do
 
   def handle_event("submit", _, socket) do
     # fake solve, just want to check path drawing logic
-    {:noreply, assign(socket, solution_path: [0, 1, 2, 4, 8, 7, 6])}
+    {:noreply, assign(socket, solution_path: [2, 1, 0, 4, 8, 7, 6])}
   end
 
   # the smallest square side length that fits the current letters
