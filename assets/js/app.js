@@ -38,46 +38,40 @@ Hooks.LettersAndUnderscores = {
 // get the centres of letters in the solution path, in order
 Hooks.DrawGridPath = {
   updated() {
-    var divRect = this.el.getBoundingClientRect()
+    // make the canvas the same size as the div
+    const divRect = this.el.getBoundingClientRect()
+    const canvas = document.getElementById("grid-overlay")
+    canvas.width = divRect.width
+    canvas.height = divRect.height
 
-    var path = document.createElementNS("http://www.w3.org/2000/svg", "path")
+    // let's draw a line
+    const ctx = canvas.getContext("2d")
+    ctx.beginPath()
+    ctx.strokeStyle = "black"
+    ctx.lineWidth = 1
 
-    path.setAttribute('id', 'solPath')
-    var path_members = this.el.querySelectorAll("[path-index]")
-    const centres = Array(path_members.length)
-    var pathString = ""
-    for (var i = 0; i < path_members.length; i++) {
+
+    // get all the letters that are on the solution path and sort by their path index
+    let path_members = Array.from(this.el.querySelectorAll("[path-index]"))
+    path_members.sort((a, b) => Number(a.getAttribute("path-index")) - Number(b.getAttribute("path-index")))
+
+    // now create a path between the centres of each letter on the path, in order
+    // TODO could change to `for..in` with a marker for first letter, no index
+    for (let i = 0; i < path_members.length; i++) {
       let item = path_members[i]
-      let path_index = item.getAttribute("path-index")
       let rect = item.getBoundingClientRect()
-      let x = rect.x + (rect.width / 2.0)
-      let y = rect.y + (rect.height / 2.0)
+      let x = rect.x - divRect.x + (rect.width / 2.0)
+      let y = rect.y - divRect.y + (rect.height / 2.0)
 
-      centres[path_index] = {
-        x: x,
-        y: y
-      }
       if (i == 0) {
-        pathString = `M ${x} ${y}`
+        ctx.moveTo(x, y)
       } else {
-        pathString += ` L ${x} ${y}`
+        ctx.lineTo(x, y)
       }
     }
 
-    path.setAttribute('d', `${pathString} z`)
-    path.setAttribute('stroke', 'red')
-    path.setAttribute('stroke-linecap', 'round')
-    path.setAttribute('stroke-linejoin', 'round')
-    path.setAttribute('stroke-width', '20')
-    path.setAttribute('fill-opacity', '0')
-
-    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
-    svg.setAttribute("width", divRect.width)
-    svg.setAttribute("height", divRect.height)
-    svg.setAttribute("class", "")
-    svg.appendChild(path)
-    this.el.appendChild(svg)
-    console.info(`Final array ${JSON.stringify(centres, undefined, 2)}`)
+    // and draw it
+    ctx.stroke()
   }
 }
 
