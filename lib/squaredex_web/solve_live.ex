@@ -97,7 +97,7 @@ defmodule SquaredexWeb.SolveLive do
 
   def handle_event("clear", _, socket) do
     # fake solve, just want to check path drawing logic
-    {:noreply, assign(socket, solution_path: [])}
+    {:noreply, assign(socket, solution_path: [], manual_path: "")}
   end
 
   defp parse_manual_path(""), do: []
