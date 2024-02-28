@@ -45,8 +45,8 @@ Hooks.DrawGridPath = {
     canvas.height = divRect.height
 
     let style = "red"
-    const lineWidth = 8
-    const startCircle = 16
+    const lineWidth = 24
+    const startCircle = 32
 
     // let's draw a line
     const ctx = canvas.getContext("2d")

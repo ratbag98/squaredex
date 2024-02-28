@@ -45,30 +45,29 @@ defmodule SquaredexWeb.SolveLive do
         class="h-full w-full pointer-events-none absolute top-0 left-0 z-10 aspect-square opacity-25"
         )
       />
-      <div class={@class} id="letters_grid" phx-hook="DrawGridPath">
-        <%= Enum.with_index(String.graphemes(@puzzle_letters) ++ List.duplicate("_", @padding), fn letter, index -> %>
-          <.letter
-            id={"letter_#{index}"}
-            letter={letter}
-            path_position={Enum.find_index(@solution_path, fn i -> index == i end)}
-          />
-        <% end) %>
-      </div>
+      <.letters_grid
+        id="solvable_grid"
+        class={@class}
+        puzzle_letters={@puzzle_letters}
+        padding={@padding}
+        solution_path={@solution_path}
+      />
     </div>
-
-    <%!-- these are necessary to get Tailwind to include the classes --%>
-    <div class="grid-rows-1 grid-cols-1" />
-    <div class="grid-rows-2 grid-cols-2" />
-    <div class="grid-rows-3 grid-cols-3" />
-    <div class="grid-rows-4 grid-cols-4" />
-    <div class="grid-rows-5 grid-cols-5" />
-    <div class="grid-rows-6 grid-cols-6" />
-    <div class="grid-rows-7 grid-cols-7" />
-    <div class="grid-rows-8 grid-cols-8" />
-    <div class="grid-rows-9 grid-cols-9" />
-    <div class="grid-rows-10 grid-cols-10" />
     """
   end
+
+  # Tailwind dynamic classes. Don't remove this comment
+  # <div class="grid-rows-1 grid-cols-1" />
+  # <div class="grid-rows-2 grid-cols-2" />
+  # <div class="grid-rows-3 grid-cols-3" />
+  # <div class="grid-rows-4 grid-cols-4" />
+  # <div class="grid-rows-5 grid-cols-5" />
+  # <div class="grid-rows-6 grid-cols-6" />
+  # <div class="grid-rows-7 grid-cols-7" />
+  # <div class="grid-rows-8 grid-cols-8" />
+  # <div class="grid-rows-9 grid-cols-9" />
+  # <div class="grid-rows-10 grid-cols-10" />
+  # BY INCLUDING THIS COMMENT, THE TAILWIND CLASSES WILL BE INCLUDED IN app.css
 
   def handle_event("refresh", %{"puzzle_letters" => puzzle_letters}, socket) do
     # should already be done by front-end. Belt and braces
@@ -117,5 +116,5 @@ defmodule SquaredexWeb.SolveLive do
   # adjust the Tailwind class
   defp grid_class(side),
     do:
-      "bg-gray-300 rounded-2xl shadow-lg grid grid-rows-#{side} grid-cols-#{side} aspect-square gap-4 p-4 z-0"
+      "bg-gray-100 rounded-2xl shadow-lg grid grid-rows-#{side} grid-cols-#{side} aspect-square gap-4 p-4 z-0"
 end

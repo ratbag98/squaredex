@@ -7,14 +7,14 @@ defmodule SquaredexWeb.Component do
   defp cell_class, do: "rounded-xl p-4"
 
   defp generic_letter_class,
-    do: "#{cell_class()} flex justify-center items-center box-border border-4"
+    do: "#{cell_class()} flex justify-center items-center box-border border text-5xl"
 
   defp dull_letter_class,
-    do: "#{generic_letter_class()} text-black text-5xl font-bold border-gray-800"
+    do: "#{generic_letter_class()} bg-gray-300 text-black font-bold border-gray-500"
 
   defp active_letter_class,
     do:
-      "#{generic_letter_class()} bg-gray-200 text-red-500 text-5xl font-semibold border-gray-500"
+      "#{generic_letter_class()} bg-gray-100 text-red-500 font-semibold border-gray-600 border-4 drop-shadow-xl"
 
   attr :id, :string, required: true, doc: "the id of this letter in the grid"
   attr :letter, :string, required: true
@@ -78,6 +78,30 @@ defmodule SquaredexWeb.Component do
     >
       <%= render_slot(@inner_block) %>
     </.link>
+    """
+  end
+
+  @doc """
+  Render a grid of letters, capable of being solved
+  """
+
+  attr :id, :string, required: true
+  attr :class, :string, required: true
+  attr :puzzle_letters, :string, required: true
+  attr :padding, :string, required: true
+  attr :solution_path, :list, default: []
+
+  def letters_grid(assigns) do
+    ~H"""
+    <div class={@class} phx-hook="DrawGridPath" id={@id}>
+      <%= Enum.with_index(String.graphemes(@puzzle_letters) ++ List.duplicate("_", @padding), fn letter, index -> %>
+        <.letter
+          id={"letter_#{index}"}
+          letter={letter}
+          path_position={Enum.find_index(@solution_path, fn i -> index == i end)}
+        />
+      <% end) %>
+    </div>
     """
   end
 end
