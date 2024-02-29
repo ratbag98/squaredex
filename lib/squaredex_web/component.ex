@@ -94,13 +94,15 @@ defmodule SquaredexWeb.Component do
   def letters_grid(assigns) do
     ~H"""
     <div class={@class} phx-hook="DrawGridPath" id={@id}>
-      <%= Enum.with_index(String.graphemes(@puzzle_letters) ++ List.duplicate("_", @padding), fn letter, index -> %>
-        <.letter
-          id={"letter_#{index}"}
-          letter={letter}
-          path_position={Enum.find_index(@solution_path, fn i -> index == i end)}
-        />
-      <% end) %>
+      <.letter
+        :for={
+          {letter, index} <-
+            Enum.with_index(String.graphemes(@puzzle_letters) ++ List.duplicate("_", @padding))
+        }
+        id={"letter_#{index}"}
+        letter={letter}
+        path_position={Enum.find_index(@solution_path, fn i -> index == i end)}
+      />
     </div>
     """
   end
