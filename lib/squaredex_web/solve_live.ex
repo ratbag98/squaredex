@@ -32,8 +32,11 @@ defmodule SquaredexWeb.SolveLive do
         />
         <.label>Provide a list of ids to connect</.label>
         <.input type="text" id="manual-path" name="manual-path" value={@manual_path} />
-        <.button>Submit</.button>
-        <.non_submit phx-click="clear">
+        <.button type="submit">Submit</.button>
+        <.non_submit
+          :if={String.length(@manual_path) > 0 || length(@solution_path) > 0}
+          phx-click="clear"
+        >
           Clear Path
         </.non_submit>
       </form>
@@ -55,19 +58,6 @@ defmodule SquaredexWeb.SolveLive do
     </div>
     """
   end
-
-  # Tailwind dynamic classes. Don't remove this comment
-  # <div class="grid-rows-1 grid-cols-1" />
-  # <div class="grid-rows-2 grid-cols-2" />
-  # <div class="grid-rows-3 grid-cols-3" />
-  # <div class="grid-rows-4 grid-cols-4" />
-  # <div class="grid-rows-5 grid-cols-5" />
-  # <div class="grid-rows-6 grid-cols-6" />
-  # <div class="grid-rows-7 grid-cols-7" />
-  # <div class="grid-rows-8 grid-cols-8" />
-  # <div class="grid-rows-9 grid-cols-9" />
-  # <div class="grid-rows-10 grid-cols-10" />
-  # BY INCLUDING THIS COMMENT, THE TAILWIND CLASSES WILL BE INCLUDED IN app.css
 
   def handle_event("refresh", %{"puzzle_letters" => puzzle_letters}, socket) do
     # should already be done by front-end. Belt and braces

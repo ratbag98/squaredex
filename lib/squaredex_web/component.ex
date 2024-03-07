@@ -106,4 +106,17 @@ defmodule SquaredexWeb.Component do
     </div>
     """
   end
+
+  # Tailwind dynamic classes. Don't remove this comment
+  # <div class="grid-rows-1 grid-cols-1" />
+  # <div class="grid-rows-2 grid-cols-2" />
+  # <div class="grid-rows-3 grid-cols-3" />
+  # <div class="grid-rows-4 grid-cols-4" />
+  # <div class="grid-rows-5 grid-cols-5" />
+  # <div class="grid-rows-6 grid-cols-6" />
+  # <div class="grid-rows-7 grid-cols-7" />
+  # <div class="grid-rows-8 grid-cols-8" />
+  # <div class="grid-rows-9 grid-cols-9" />
+  # <div class="grid-rows-10 grid-cols-10" />
+  # BY INCLUDING THIS COMMENT, THE TAILWIND CLASSES WILL BE INCLUDED IN app.css
 end

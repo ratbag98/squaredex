@@ -28,7 +28,7 @@ let Hooks = {}
 // Only allow A-Z and underscores for custom grids
 Hooks.LettersAndUnderscores = {
   mounted() {
-    var regex = new RegExp("[^A-Z_]", 'g')
+    let regex = new RegExp("[^A-Z_]", 'g')
     this.el.addEventListener("input", _e => {
       this.el.value = this.el.value.replace(regex, "")
     })
